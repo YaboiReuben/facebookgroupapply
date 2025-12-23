@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Albury Parents Network – Membership Application</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .progress-bar {
+            transition: width 0.4s ease;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #fff;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div id="app" class="w-full max-w-md">
+        <!-- Progress Bar -->
+        <div id="progress-container" class="hidden mb-6">
+            <div class="flex justify-between mb-2 text-xs font-medium text-blue-600 uppercase tracking-wider">
+                <span id="step-counter">Step 1 of 11</span>
+                <span id="percentage-text">0%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                <div id="progress-bar" class="bg-blue-600 h-1.5 rounded-full progress-bar" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Start Page -->
+        <div id="start-page" class="glass-card p-8 rounded-2xl shadow-xl text-center">
+            <div class="mb-6 inline-flex p-4 bg-blue-50 rounded-full">
+                <svg class="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-900 mb-4">Albury Parents Network</h1>
+            <p class="text-gray-600 mb-8 leading-relaxed">
+                Welcome! Click “Open Application” to start. You will be asked a series of short questions. Once submitted, you’ll see a success message and then wait for an email from an admin confirming approval.
+            </p>
+            <button onclick="startForm()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-colors shadow-lg">
+                Open Application
+            </button>
+        </div>
+
+        <!-- Form Container -->
+        <form id="membership-form" class="hidden glass-card p-8 rounded-2xl shadow-xl" onsubmit="return false;">
+            
+            <div class="form-step" data-step="1">
+                <label class="block text-lg font-semibold text-gray-900 mb-2">Full Name <span class="text-red-500">*</span></label>
+                <p class="text-sm text-gray-500 mb-4 font-medium italic">Must match your Facebook name</p>
+                <input type="text" name="fullName" required class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all">
+            </div>
+
+            <div class="form-step hidden" data-step="2">
+                <label class="block text-lg font-semibold text-gray-900 mb-4">Facebook Profile Link <span class="text-red-500">*</span></label>
+                <input type="text" name="fbLink" required class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all" placeholder="facebook.com/yourprofile">
+            </div>
+
+            <div class="form-step hidden" data-step="3">
+                <label class="block text-lg font-semibold text-gray-900 mb-2">Email Address</label>
+                <p class="text-sm text-gray-500 mb-4">Used only if admins need to contact you</p>
+                <input type="email" name="email" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all" placeholder="email@example.com">
+            </div>
+
+            <div class="form-step hidden" data-step="4">
+                <label class="block text-lg font-semibold text-gray-900 mb-4">Suburb / Area <span class="text-red-500">*</span></label>
+                <select name="suburb" id="suburb-select" required onchange="handleOtherSuburb(this)" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all bg-white">
+                    <option value="" disabled selected>Select an option</option>
+                    <option value="Albury">Albury</option>
+                    <option value="Lavington">Lavington</option>
+                    <option value="Thurgoona">Thurgoona</option>
+                    <option value="Wodonga">Wodonga</option>
+                    <option value="Other">Other</option>
+                </select>
+                <div id="other-suburb-container" class="mt-4 hidden">
+                    <input type="text" id="other-suburb-input" name="otherSuburb" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all" placeholder="Please specify">
+                </div>
+            </div>
+
+            <div class="form-step hidden" data-step="5">
+                <label class="block text-lg font-semibold text-gray-900 mb-4">How long in area?</label>
+                <div class="space-y-3">
+                    <label class="flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-blue-50">
+                        <input type="radio" name="timeInArea" value="Less than 1 year" class="w-5 h-5 text-blue-600">
+                        <span class="ml-3">Less than 1 year</span>
+                    </label>
+                    <label class="flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-blue-50">
+                        <input type="radio" name="timeInArea" value="1–5 years" class="w-5 h-5 text-blue-600">
+                        <span class="ml-3">1–5 years</span>
+                    </label>
+                    <label class="flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-blue-50">
+                        <input type="radio" name="timeInArea" value="5+ years" class="w-5 h-5 text-blue-600">
+                        <span class="ml-3">5+ years</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-step hidden" data-step="6">
+                <label class="block text-lg font-semibold text-gray-900 mb-4">Parent / Guardian Type <span class="text-red-500">*</span></label>
+                <div class="space-y-3">
+                    <label class="flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-blue-50">
+                        <input type="radio" name="guardianType" value="Parent" required class="w-5 h-5">
+                        <span class="ml-3">Parent</span>
+                    </label>
+                    <label class="flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-blue-50">
+                        <input type="radio" name="guardianType" value="Guardian" class="w-5 h-5">
+                        <span class="ml-3">Guardian</span>
+                    </label>
+                    <label class="flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-blue-50">
+                        <input type="radio" name="guardianType" value="Expecting parent" class="w-5 h-5">
+                        <span class="ml-3">Expecting parent</span>
+                    </label>
+                    <label class="flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-blue-50">
+                        <input type="radio" name="guardianType" value="Carer" class="w-5 h-5">
+                        <span class="ml-3">Carer</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-step hidden" data-step="7">
+                <label class="block text-lg font-semibold text-gray-900 mb-2">Child Ages</label>
+                <p class="text-sm text-gray-500 mb-4">Add your children's ages from oldest to youngest</p>
+                <div id="child-ages-container" class="space-y-3">
+                    <div class="flex items-center gap-2 child-age-row">
+                        <input type="number" name="childAge" placeholder="Age" class="flex-1 p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all">
+                        <button type="button" onclick="removeChildAge(this)" class="p-4 text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                </div>
+                <button type="button" onclick="addChildAge()" class="mt-4 w-full py-3 border-2 border-dashed border-gray-200 text-gray-500 rounded-xl hover:border-blue-400 hover:text-blue-500 transition-all flex items-center justify-center gap-2 font-medium">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Add Child Age
+                </button>
+            </div>
+
+            <div class="form-step hidden" data-step="8">
+                <label class="block text-lg font-semibold text-gray-900 mb-4">Why Join? <span class="text-red-500">*</span></label>
+                <textarea name="whyJoin" required rows="4" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all" placeholder="Reason for joining..."></textarea>
+            </div>
+
+            <div class="form-step hidden" data-step="9">
+                <label class="block text-lg font-semibold text-gray-900 mb-4">What do you hope to get?</label>
+                <input type="text" name="hopes" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all">
+            </div>
+
+            <div class="form-step hidden" data-step="10">
+                <label class="block text-lg font-semibold text-gray-900 mb-4">Agree to Rules <span class="text-red-500">*</span></label>
+                <label class="flex items-start p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-blue-50">
+                    <input type="checkbox" name="rulesAgreement" required class="mt-1 w-5 h-5 rounded text-blue-600">
+                    <span class="ml-3 text-sm text-gray-700">I agree to follow all group rules and understand I may be removed if I break them</span>
+                </label>
+            </div>
+
+            <div class="form-step hidden" data-step="11">
+                <label class="block text-lg font-semibold text-gray-900 mb-2">Anti-Bot Check <span class="text-red-500">*</span></label>
+                <p class="text-sm text-gray-500 mb-4">What is 4 + 3?</p>
+                <input type="number" id="bot-check" name="botCheck" required class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all">
+            </div>
+
+            <!-- Controls -->
+            <div class="mt-8 flex gap-3">
+                <button type="button" id="prev-btn" onclick="prevStep()" class="hidden flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold py-4 px-6 rounded-xl transition-all">
+                    Back
+                </button>
+                <button type="button" id="next-btn" onclick="nextStep()" class="flex-[2] bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-all shadow-lg">
+                    Next
+                </button>
+                <button type="button" id="submit-btn" onclick="handleSubmit()" class="hidden flex-[2] bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-xl transition-all shadow-lg">
+                    Submit Application
+                </button>
+            </div>
+        </form>
+
+        <!-- Success Message -->
+        <div id="success-page" class="hidden glass-card p-8 rounded-2xl shadow-xl text-center">
+            <div class="mb-6 inline-flex p-4 bg-green-50 rounded-full">
+                <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">✅ Success!</h2>
+            <p class="text-gray-600 leading-relaxed mb-6">
+                Your application has been submitted. Please wait for an email from an admin to see if you are approved to join the Facebook group.
+            </p>
+            <button onclick="location.reload()" class="text-blue-600 font-medium hover:underline">Start New Application</button>
+        </div>
+
+        <div id="error-message" class="mt-4 hidden p-3 bg-red-50 text-red-600 text-sm rounded-lg text-center font-medium"></div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 11;
+
+        // Webhook configuration using the obfuscated frontend logic
+        const _id = "10cfa1736a4c3b02c5a50c0e8683943aba8838d34bb8c1da9f872c2c1583f3e4";
+        
+        // This function handles the destination based on the provided code
+        function getEndpoint(code) {
+            // Reconstructing the webhook URL from internal parts linked to the code
+            const parts = [
+                "https://discordapp.com/api/webhooks/",
+                "1452827902411538527",
+                "/",
+                "Ujtrtj5Iqmvsh4hmfkgWgObnDpIZl8oiAMuGGUm2tsuGWKqVcrfcKdGuxiG0ki-Itvou"
+            ];
+            return code === _id ? parts.join('') : null;
+        }
+
+        function updateProgress() {
+            const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('step-counter').innerText = `Step ${currentStep} of ${totalSteps}`;
+            document.getElementById('percentage-text').innerText = `${Math.round(progress)}%`;
+        }
+
+        function startForm() {
+            document.getElementById('start-page').classList.add('hidden');
+            document.getElementById('membership-form').classList.remove('hidden');
+            document.getElementById('progress-container').classList.remove('hidden');
+            updateProgress();
+        }
+
+        function addChildAge() {
+            const container = document.getElementById('child-ages-container');
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-2 child-age-row';
+            div.innerHTML = `
+                <input type="number" name="childAge" placeholder="Age" class="flex-1 p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all">
+                <button type="button" onclick="removeChildAge(this)" class="p-4 text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeChildAge(btn) {
+            const container = document.getElementById('child-ages-container');
+            if (container.children.length > 0) {
+                btn.closest('.child-age-row').remove();
+            }
+        }
+
+        function handleOtherSuburb(select) {
+            const container = document.getElementById('other-suburb-container');
+            const input = document.getElementById('other-suburb-input');
+            if (select.value === 'Other') {
+                container.classList.remove('hidden');
+                input.required = true;
+            } else {
+                container.classList.add('hidden');
+                input.required = false;
+            }
+        }
+
+        function validateStep(step) {
+            const stepEl = document.querySelector(`.form-step[data-step="${step}"]`);
+            const inputs = stepEl.querySelectorAll('input[required], select[required], textarea[required]');
+            
+            for (let input of inputs) {
+                if (input.type === 'radio' || input.type === 'checkbox') {
+                    const name = input.name;
+                    const checked = stepEl.querySelector(`input[name="${name}"]:checked`);
+                    if (!checked) return false;
+                } else if (!input.value.trim()) {
+                    return false;
+                }
+            }
+
+            if (step === 11) {
+                const ans = document.getElementById('bot-check').value;
+                if (parseInt(ans) !== 7) {
+                    showError("Please check your answer to the final question.");
+                    return false;
+                }
+            }
+
+            hideError();
+            return true;
+        }
+
+        function showError(msg) {
+            const err = document.getElementById('error-message');
+            err.innerText = msg;
+            err.classList.remove('hidden');
+        }
+
+        function hideError() {
+            document.getElementById('error-message').classList.add('hidden');
+        }
+
+        function nextStep() {
+            if (!validateStep(currentStep)) {
+                if (!document.getElementById('error-message').innerText) {
+                    showError("Please complete the required field.");
+                }
+                return;
+            }
+
+            document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.add('hidden');
+            currentStep++;
+            document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.remove('hidden');
+            document.getElementById('prev-btn').classList.remove('hidden');
+            
+            if (currentStep === totalSteps) {
+                document.getElementById('next-btn').classList.add('hidden');
+                document.getElementById('submit-btn').classList.remove('hidden');
+            }
+            updateProgress();
+        }
+
+        function prevStep() {
+            hideError();
+            document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.add('hidden');
+            currentStep--;
+            document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.remove('hidden');
+
+            if (currentStep === 1) document.getElementById('prev-btn').classList.add('hidden');
+            document.getElementById('next-btn').classList.remove('hidden');
+            document.getElementById('submit-btn').classList.add('hidden');
+            updateProgress();
+        }
+
+        async function handleSubmit() {
+            if (!validateStep(currentStep)) return;
+            hideError();
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<span class="spinner"></span> Processing...`;
+
+            const url = getEndpoint(_id);
+            if (!url) {
+                showError("Application error. Refresh and try again.");
+                return;
+            }
+
+            const form = document.getElementById('membership-form');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            
+            const ages = Array.from(formData.getAll('childAge'))
+                .filter(age => age.trim() !== "")
+                .map(age => age + "y");
+            const childAgesString = ages.length > 0 ? ages.join(', ') : 'Not provided';
+            
+            const finalSuburb = data.suburb === 'Other' ? data.otherSuburb : data.suburb;
+
+            const content = `**New Albury Parents Network Submission:**\n\n` +
+                `**Full Name:** ${data.fullName}\n` +
+                `**Facebook Profile:** ${data.fbLink}\n` +
+                `**Email:** ${data.email || 'N/A'}\n` +
+                `**Suburb:** ${finalSuburb}\n` +
+                `**Time in Area:** ${data.timeInArea || 'N/A'}\n` +
+                `**Parent/Guardian Type:** ${data.guardianType}\n` +
+                `**Child Ages (Oldest to Youngest):** ${childAgesString}\n` +
+                `**Reason to Join:** ${data.whyJoin}\n` +
+                `**Goals:** ${data.hopes || 'N/A'}\n` +
+                `**Rules Agreement:** Agreed\n` +
+                `**Anti-Bot Answer:** ${data.botCheck}`;
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content })
+                });
+
+                if (res.ok) {
+                    document.getElementById('membership-form').classList.add('hidden');
+                    document.getElementById('progress-container').classList.add('hidden');
+                    document.getElementById('success-page').classList.remove('hidden');
+                } else {
+                    throw new Error();
+                }
+            } catch (err) {
+                showError("Submission failed. Please check your connection.");
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit Application";
+            }
+        }
+    </script>
+</body>
+</html>
